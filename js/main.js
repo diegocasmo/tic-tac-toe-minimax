@@ -10,6 +10,7 @@ var COMPUTER_PLAYER = 'X';
 var active_turn = "HUMAN";
 var choice;
 var searchTimes = new Array();
+var showAverageTime = true;
 
 function NewGame()
 {
@@ -19,6 +20,7 @@ function NewGame()
         document.images[i].src = "images/blank.png";
     }
     DeleteTimes();
+    showAverageTime = true;
     var alert = document.getElementById("turnInfo");
     active_turn = "HUMAN";
     alert.innerHTML = "Your turn!";
@@ -26,7 +28,7 @@ function NewGame()
 
 function MakeMove(pos)
 {
-    if (!GameOver(board) && board[pos] !==COMPUTER_PLAYER && board[pos] !==HUMAN_PLAYER)
+    if (!GameOver(board) && board[pos] == UNOCCUPIED)
     {
         board[pos] = HUMAN_PLAYER;
         document.images[pos].src = playerImage.src;
@@ -71,8 +73,7 @@ function score(game, depth) {
 }
 
 function minimax(tempBoardGame, depth) {
-    if (CheckForWinner(tempBoardGame) === 1 || CheckForWinner(tempBoardGame) === 2 
-            || CheckForWinner(tempBoardGame) === 3)
+    if (CheckForWinner(tempBoardGame) !== 0)
         return score(tempBoardGame, depth);
     
     depth+=1;
@@ -131,10 +132,8 @@ function ChangeTurn() {
 function GetAvailableMoves(game) {
     var possibleMoves = new Array();
     for (var i = 0; i < BOARD_SIZE; i++)
-    {
         if (game[i] === UNOCCUPIED)
             possibleMoves.push(i);
-    }
     return possibleMoves;
 }
 
@@ -183,9 +182,7 @@ function CheckForWinner(game) {
 function GameOver(game)
 {
     if (CheckForWinner(game) === 0)
-    {
         return false;
-    }
     else if (CheckForWinner(game) === 1)
     {
         var alert = document.getElementById("turnInfo");
@@ -217,11 +214,15 @@ function DeleteTimes() {
 }
 
 function ShowAverageTime() {
-    var sum = 0;
-    var i = 0;
-    for (i; i < searchTimes.length; i++) {
-        sum += searchTimes[i];
+    if (showAverageTime)
+    {
+        var sum = 0;
+        var i = 0;
+        for (i; i < searchTimes.length; i++)
+            sum += searchTimes[i];
+        
+        document.getElementById("searchTime").innerHTML =
+                document.getElementById("searchTime").innerHTML + "<br />Average search was <strong>" + sum / i + "</strong> seconds. <br />";
+        showAverageTime = false;
     }
-    document.getElementById("searchTime").innerHTML = 
-            document.getElementById("searchTime").innerHTML + "<br />Average search was <strong>" + sum/i + "</strong> seconds. <br />";
 }
